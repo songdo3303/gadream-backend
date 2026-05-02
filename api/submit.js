@@ -1,7 +1,7 @@
 const { Resend } = require('resend');
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const TO_EMAIL = 'sksk3222@naver.com';
+const TO_EMAIL = 'songdo3303@gmail.com';
 const TO_PHONE = '010-7548-3222';
 
 module.exports = async (req, res) => {
