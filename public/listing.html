@@ -125,13 +125,15 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.6;cursor:pointer}
 
 .ac-cnt-btn{width:28px;height:28px;border:1.5px solid var(--g2);border-radius:6px;background:#fff;font-size:13px;font-weight:700;color:var(--g5);cursor:pointer;font-family:inherit;transition:all .15s;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;}
 .ac-cnt-btn.on{border-color:var(--pr);background:var(--prl);color:var(--pr);}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
 </style>
 </head>
 <body>
 
-<div class="hdr">
-  <div class="logo">가드림</div>
-  <div class="subh">매물 접수</div>
+
 </div>
 
 <div class="wrap" id="mf">
@@ -258,8 +260,8 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.6;cursor:pointer}
   <div class="card">
     <div class="st">입주 가능일</div>
     <div class="g3">
-      <button type="button" class="ib" id="mv-consult"   onclick="selMove('consult')"><span class="ico">🤝</span>협의</button>
-      <button type="button" class="ib" id="mv-immediate" onclick="selMove('immediate')"><span class="ico">⚡</span>즉시</button>
+      <button type="button" class="ib" id="mv-consult"   onclick="selMove('consult')"><span class="ico">🤝</span>협의입주</button>
+      <button type="button" class="ib" id="mv-immediate" onclick="selMove('immediate')"><span class="ico">⚡</span>빠른입주</button>
       <button type="button" class="ib" id="mv-date"      onclick="selMove('date')"><span class="ico">📆</span>날짜선택</button>
     </div>
     <div class="hide" id="mv-dw">
@@ -572,8 +574,8 @@ function collectData(){
   var unitDetail=unit?(unit.t+' / '+unit.f+'층 / '+(unit.d||'')):null;
 
   var moveIn='';
-  if(mType==='consult') moveIn='협의';
-  else if(mType==='immediate') moveIn='즉시';
+  if(mType==='consult') moveIn='협의입주';
+  else if(mType==='immediate') moveIn='빠른입주';
   else moveIn=G('dal').textContent||'날짜 미선택';
 
   var condLabels={live:'실거주',tenant:'세입자 승계(갭투자)',fast:'빠른잔금 원해요',
