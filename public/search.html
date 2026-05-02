@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>집구하기 접수 — 가드림</title>
+<style>
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pr:#2563EB;--prl:#EFF6FF;
+  --or:#EA580C;--orl:#FFF7ED;
+  --re:#EF4444;--reb:#FEF2F2;--rer:#FECACA;
+  --gr:#059669;--grb:#ECFDF5;--grr:#A7F3D0;
+  --g0:#F9FAFB;--g1:#F3F4F6;--g2:#E5E7EB;
+  --g4:#9CA3AF;--g5:#6B7280;--g7:#374151;--g9:#111827;
+  --r:12px;--rs:8px
+}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#F0F4F8;min-height:100vh;color:var(--g9)}
+.hdr{background:#fff;padding:14px 20px;border-bottom:1px solid var(--g2);position:sticky;top:0;z-index:10}
+.logo{font-size:20px;font-weight:800;color:var(--pr);letter-spacing:-.5px}
+.subh{font-size:12px;color:var(--g5);margin-top:1px}
+.wrap{max-width:480px;margin:0 auto;padding:16px 16px 56px;display:flex;flex-direction:column;gap:12px}
+.card{background:#fff;border-radius:var(--r);padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.hide{display:none!important}
+.st{font-size:14px;font-weight:700;color:var(--g7);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.st::before{content:'';width:3px;height:14px;background:var(--pr);border-radius:2px;display:inline-block;flex-shrink:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.g6{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+/* 아이콘 버튼 */
+.ib{border:2px solid var(--g2);border-radius:var(--rs);padding:14px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;background:#fff;transition:all .15s;font-size:11px;font-weight:600;color:var(--g5);user-select:none;-webkit-tap-highlight-color:transparent;font-family:inherit;line-height:1.3;text-align:center}
+.ib .ico{font-size:22px}
+.ib:active{transform:scale(.97)}
+.ib.ab{border-color:var(--pr);background:var(--prl);color:var(--pr)}
+.ib.ar{border-color:var(--re);background:var(--reb);color:var(--re)}
+.ib.ap{border-color:#7C3AED;background:#F5F3FF;color:#7C3AED}
+/* 아파트 체크 버튼 */
+.apt-btn{border:2px solid var(--g2);border-radius:var(--rs);padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;background:#fff;transition:all .15s;font-size:11px;font-weight:600;color:var(--g5);user-select:none;-webkit-tap-highlight-color:transparent;font-family:inherit;line-height:1.3;text-align:center}
+.apt-btn .ai{font-size:20px}
+.apt-btn.on{border-color:var(--pr);background:var(--prl);color:var(--pr)}
+/* 방향 버튼 */
+.dir-btn{border:1.5px solid var(--g2);border-radius:var(--rs);padding:11px 6px;font-size:12px;font-weight:600;color:var(--g5);background:#fff;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit;-webkit-tap-highlight-color:transparent}
+.dir-btn.on{border-color:var(--pr);background:var(--prl);color:var(--pr)}
+/* 토글 */
+.tr{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tb{border:1.5px solid var(--g2);border-radius:var(--rs);padding:11px 6px;font-size:12px;font-weight:600;color:var(--g5);background:#fff;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.tb:active{transform:scale(.97)}
+.tb.ao{border-color:var(--or);background:var(--orl);color:var(--or)}
+.tb.ab{border-color:var(--pr);background:var(--prl);color:var(--pr)}
+/* 금액 */
+.prg{display:flex;flex-direction:column;gap:10px}
+.prr{display:flex;align-items:center;border:1.5px solid var(--g2);border-radius:var(--rs);overflow:hidden;transition:border-color .15s}
+.prr:focus-within{border-color:var(--pr)}
+.prl2{padding:12px 10px;font-size:12px;font-weight:600;color:var(--g5);background:var(--g0);border-right:1px solid var(--g2);white-space:nowrap;min-width:82px}
+.pri{flex:1;border:none;outline:none;padding:12px 8px;font-size:15px;font-weight:600;color:var(--g9);text-align:right;font-family:inherit;min-width:0}
+.pru{padding:12px 10px 12px 2px;font-size:13px;color:var(--g4)}
+/* 입력 */
+.si{border:1.5px solid var(--g2);border-radius:var(--rs);padding:12px 12px;font-size:14px;font-family:inherit;outline:none;color:var(--g9);transition:border-color .15s;width:100%;background:#fff}
+.si:focus{border-color:var(--pr)}
+.si::placeholder{color:var(--g4)}
+.or2{display:grid;grid-template-columns:1fr 78px 1fr;gap:8px;align-items:stretch}
+.os{border:1.5px solid var(--g2);border-radius:var(--rs);padding:12px 4px;font-size:12px;font-family:inherit;outline:none;color:var(--g9);background:#fff;-webkit-appearance:none;appearance:none;text-align:center;cursor:pointer;width:100%;transition:border-color .15s}
+.os:focus{border-color:var(--pr)}
+/* 날짜 */
+.ah{font-size:12px;color:var(--g5);margin-bottom:12px;padding:8px 10px;background:var(--g0);border-radius:6px;display:none}
+.ah.vis{display:block}
+input[type=date]{width:100%;border:1.5px solid var(--g2);border-radius:var(--rs);padding:12px 14px;font-size:14px;font-family:inherit;outline:none;color:var(--g9);-webkit-appearance:none;background:#fff;margin-top:10px;transition:border-color .15s}
+input[type=date]:focus{border-color:var(--pr)}
+input[type=date]::-webkit-calendar-picker-indicator{opacity:.6;cursor:pointer}
+.dal{margin-top:8px;font-size:13px;font-weight:600;color:var(--pr);padding:8px 12px;background:var(--prl);border-radius:var(--rs);display:none}
+.dal.vis{display:block}
+/* 옵션 */
+.olbl{font-size:12px;color:var(--g5);margin-bottom:10px}
+.osr{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.osr::-webkit-scrollbar{display:none}
+.oib{border:1.5px solid var(--g2);border-radius:var(--rs);padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;background:#fff;transition:all .15s;font-size:11px;font-weight:600;color:var(--g5);white-space:nowrap;flex-shrink:0;min-width:64px;font-family:inherit;user-select:none;-webkit-tap-highlight-color:transparent}
+.oib .oi{font-size:24px}
+.oib:active{transform:scale(.97)}
+.oib.on{border-color:var(--pr);background:var(--prl);color:var(--pr)}
+/* feat */
+.ftt{font-size:14px;font-weight:700;color:var(--g7);margin-bottom:4px}
+.fts{font-size:11px;color:var(--g4);margin-bottom:10px}
+.fb{border:1.5px solid var(--g2);border-radius:var(--rs);padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;background:#fff;transition:all .15s;font-size:10px;font-weight:600;color:var(--g5);font-family:inherit;text-align:center;line-height:1.2;user-select:none;-webkit-tap-highlight-color:transparent}
+.fb .fi{font-size:20px}
+.fb.on{border-color:var(--pr);background:var(--prl);color:var(--pr)}
+.sdv{border:none;border-top:1px solid var(--g1);margin:14px 0}
+.mt10{margin-top:10px}
+/* 비고 AC */
+.ac-cnt-btn{width:28px;height:28px;border:1.5px solid var(--g2);border-radius:6px;background:#fff;font-size:13px;font-weight:700;color:var(--g5);cursor:pointer;font-family:inherit;transition:all .15s;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center}
+.ac-cnt-btn.on{border-color:var(--pr);background:var(--prl);color:var(--pr)}
+/* intro */
+.itw{position:relative}
+.ita{width:100%;min-height:70px;border:1.5px solid var(--g2);border-radius:var(--rs);padding:12px 48px 12px 12px;font-size:14px;font-family:inherit;outline:none;color:var(--g9);resize:none;transition:border-color .15s}
+.ita:focus{border-color:var(--pr)}
+.ita::placeholder{color:var(--g4)}
+.itc{position:absolute;right:10px;bottom:10px;font-size:11px;color:var(--g4)}
+/* submit */
+.bf{width:100%;padding:16px;background:var(--pr);color:#fff;border:none;border-radius:var(--r);font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.bf:active{transform:scale(.98);background:#1D4ED8}
+/* done */
+.done{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:40px 20px}
+.done-i{font-size:64px;margin-bottom:20px}
+.done-t{font-size:22px;font-weight:800;color:var(--g9);margin-bottom:8px}
+.done-s{font-size:14px;color:var(--g5);line-height:1.6}
+
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">가드림</div>
+  <div class="subh">집구하기 접수</div>
+</div>
+
+<div class="wrap" id="mf">
+
+  <!-- 매물 유형 -->
+  <div class="card">
+    <div class="st">매물 유형을 선택해주세요</div>
+    <div class="g2">
+      <button type="button" class="ib ab" id="tp-apt" onclick="selProp('apt')"><span class="ico">🏢</span>아파트</button>
+      <button type="button" class="ib"    id="tp-opt" onclick="selProp('opt')"><span class="ico">🏨</span>오피스텔</button>
+    </div>
+  </div>
+
+  <!-- 거래 유형 -->
+  <div class="card">
+    <div class="st">거래 유형을 선택해주세요</div>
+    <div class="g3">
+      <button type="button" class="ib" id="dl-sell"    onclick="selDeal('sell')"><span class="ico">🔑</span>매매</button>
+      <button type="button" class="ib" id="dl-rent"    onclick="selDeal('rent')"><span class="ico">🏠</span>전세</button>
+      <button type="button" class="ib" id="dl-monthly" onclick="selDeal('monthly')"><span class="ico">📅</span>월세</button>
+    </div>
+  </div>
+
+  <!-- 금액 -->
+  <div class="card">
+    <div class="st">희망 금액을 입력해주세요</div>
+    <div class="prg" id="prg">
+      <div class="prr"><div class="prl2">매매 희망가</div><input class="pri" id="price1" type="number" inputmode="numeric" placeholder="0"><div class="pru">만원</div></div>
+    </div>
+  </div>
+
+  <!-- 아파트 선택 (중복 가능) -->
+  <div class="card">
+    <div class="st">원하는 아파트를 선택해주세요</div>
+    <div style="font-size:12px;color:var(--g5);margin-bottom:12px">중복 선택 가능합니다</div>
+    <div class="g6" id="apt-grid"></div>
+  </div>
+
+  <!-- 방향 선택 -->
+  <div class="card">
+    <div class="st">선호 방향을 선택해주세요</div>
+    <div style="font-size:12px;color:var(--g5);margin-bottom:12px">중복 선택 가능합니다</div>
+    <div class="g3" style="gap:8px" id="dir-grid">
+      <button type="button" class="dir-btn" id="dir-s"  onclick="togDir('s')">남향</button>
+      <button type="button" class="dir-btn" id="dir-se" onclick="togDir('se')">남동향</button>
+      <button type="button" class="dir-btn" id="dir-sw" onclick="togDir('sw')">남서향</button>
+      <button type="button" class="dir-btn" id="dir-e"  onclick="togDir('e')">동향</button>
+      <button type="button" class="dir-btn" id="dir-w"  onclick="togDir('w')">서향</button>
+      <button type="button" class="dir-btn" id="dir-n"  onclick="togDir('n')">북향</button>
+    </div>
+  </div>
+
+  <!-- 의뢰인 정보 -->
+  <div class="card">
+    <div class="st">의뢰인 정보</div>
+    <div class="or2">
+      <input class="si" id="cl-name"  type="text" placeholder="이름">
+      <select class="os" id="cl-carr">
+        <option value="">통신사</option>
+        <option>SKT</option><option>KT</option><option>LGU+</option>
+        <option>SKT 알뜰폰</option><option>KT 알뜰폰</option><option>LGU+ 알뜰폰</option>
+      </select>
+      <input class="si" id="cl-phone" type="tel" inputmode="numeric" placeholder="010-0000-0000" oninput="fmtPhone(this)">
+    </div>
+  </div>
+
+  <!-- 입주 가능일 -->
+  <div class="card">
+    <div class="st">입주 희망일</div>
+    <div class="g3">
+      <button type="button" class="ib" id="mv-consult"   onclick="selMove('consult')"><span class="ico">🤝</span>협의</button>
+      <button type="button" class="ib" id="mv-immediate" onclick="selMove('immediate')"><span class="ico">⚡</span>즉시</button>
+      <button type="button" class="ib" id="mv-date"      onclick="selMove('date')"><span class="ico">📆</span>날짜선택</button>
+    </div>
+    <div class="hide" id="mv-dw">
+      <input type="date" id="mv-di" onchange="onDate()">
+      <div class="dal" id="dal"></div>
+    </div>
+  </div>
+
+  <!-- 옵션 및 조건 -->
+  <div class="card">
+    <div class="st">현재 의뢰인 상황</div>
+    <div class="olbl" id="cond-lbl">거래 유형을 먼저 선택해주세요</div>
+    <div class="osr" id="cond-row"></div>
+  </div>
+
+  <!-- 생활 및 구조 + 가전 가구 + 인테리어 -->
+  <div class="card">
+    <div class="ftt">생활 및 구조 옵션</div>
+    <div class="fts">원하는 항목을 선택하세요</div>
+    <div class="g4" id="sg"></div>
+
+    <hr class="sdv">
+    <div class="ftt">가전 및 가구 옵션</div>
+    <div class="fts">원하는 항목을 선택하세요</div>
+    <div class="g4" id="ag"></div>
+
+    <!-- 비고란 -->
+    <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+      <div id="bigo-ac" class="hide" style="display:flex;align-items:center;gap:8px;border:1.5px solid var(--g2);border-radius:var(--rs);padding:11px 14px;flex-wrap:wrap">
+        <span style="font-size:13px;font-weight:600;color:var(--g7)">❄ 시스템에어컨 갯수</span>
+        <div style="display:flex;gap:5px;margin-left:auto">
+          <button type="button" class="ac-cnt-btn" id="ac-1" onclick="selAC(1)">1</button>
+          <button type="button" class="ac-cnt-btn" id="ac-2" onclick="selAC(2)">2</button>
+          <button type="button" class="ac-cnt-btn" id="ac-3" onclick="selAC(3)">3</button>
+          <button type="button" class="ac-cnt-btn" id="ac-4" onclick="selAC(4)">4</button>
+          <button type="button" class="ac-cnt-btn" id="ac-5" onclick="selAC(5)">5</button>
+          <button type="button" class="ac-cnt-btn" id="ac-6" onclick="selAC(6)">6</button>
+          <button type="button" class="ac-cnt-btn" id="ac-full" onclick="selAC('full')" style="width:auto;padding:0 8px;font-size:11px">풀에어컨</button>
+        </div>
+      </div>
+    </div>
+
+    <hr class="sdv">
+    <div class="ftt">인테리어 및 수리</div>
+    <div class="fts">원하는 항목을 선택하세요</div>
+    <div class="g5" id="ig"></div>
+  </div>
+
+  <!-- 한줄 소개 -->
+  <div class="card">
+    <div class="st">원하는 집 한줄 소개</div>
+    <div class="itw">
+      <textarea class="ita" id="intro" maxlength="100" placeholder="예: 초등학교 근처, 주차 2대 필요, 1층 제외" oninput="updCnt()"></textarea>
+      <span class="itc" id="icnt">0/100</span>
+    </div>
+  </div>
+
+  <button class="bf" id="submit-btn" onclick="doSubmit()">접수하기</button>
+</div>
+
+<div class="done" id="done">
+  <div class="done-i">✅</div>
+  <div class="done-t">접수가 완료됐습니다!</div>
+  <div class="done-s">담당자가 곧 연락드리겠습니다.<br>감사합니다 😊</div>
+</div>
+
+<script>
+
+var AK=[{"key": "더샵송도마리나베이", "label": "더샵\n마리나베이", "ico": "🏢"}, {"key": "송도오션파크베르디움", "label": "오션파크\n베르디움", "ico": "🏢"}, {"key": "e편한세상 송도", "label": "e편한세상\n송도", "ico": "🏢"}, {"key": "랜드마크시티센트럴더샵아파트", "label": "랜드마크\n센트럴더샵", "ico": "🏢"}, {"key": "송도SK뷰", "label": "송도\nSK뷰", "ico": "🏢"}, {"key": "호반써밋", "label": "호반써밋", "ico": "🏢"}];
+var pType='apt',dType=null,mType=null;
+var selApts=new Set(),selDirs=new Set();
+var sCond=new Set(),sStr=new Set(),sApp=new Set(),sInt=new Set();
+var acSel=0;
+
+var SELL_C=[
+  {id:'c1',ico:'🏡',lbl:'실거주예정'},
+  {id:'c2',ico:'📋',lbl:'세안고가능'},
+  {id:'c3',ico:'⚡',lbl:'빠른잔금가능'}
+];
+var RENT_C=[
+  {id:'c4',ico:'🐾',lbl:'반려동물\n키워요'},
+  {id:'c5',ico:'🌍',lbl:'외국인\n입니다'},
+  {id:'c6',ico:'🛡',lbl:'보증보험\n가입해요'},
+  {id:'c7',ico:'🏦',lbl:'전세대출\n받아요'}
+];
+var STRUCT=[
+  {id:'s1',ico:'🌿',lbl:'테라스'},{id:'s2',ico:'🏗',lbl:'복층구조'},
+  {id:'s3',ico:'📦',lbl:'개인창고'},{id:'s4',ico:'🏠',lbl:'알파룸'},
+  {id:'s5',ico:'👗',lbl:'드레스룸'},{id:'s6',ico:'🧺',lbl:'팬트리'},
+  {id:'s7',ico:'🪟',lbl:'베란다확장'}
+];
+var APPL=[
+  {id:'a1',ico:'❄',lbl:'시스템에어컨'},{id:'a2',ico:'🌬',lbl:'벽걸이에어컨'},
+  {id:'a3',ico:'💨',lbl:'스탠드에어컨'},{id:'a4',ico:'👔',lbl:'스타일러/드레서'},
+  {id:'a5',ico:'🚪',lbl:'붙박이장'},{id:'a6',ico:'🔥',lbl:'인덕션/가스레인지'},
+  {id:'a7',ico:'🧊',lbl:'빌트인냉장고'},{id:'a8',ico:'🍽',lbl:'식기세척기'},
+  {id:'a9',ico:'🗑',lbl:'음식물처리기'},{id:'a10',ico:'🫧',lbl:'세탁기'},
+  {id:'a11',ico:'☀',lbl:'빌트인오븐'},{id:'a12',ico:'📺',lbl:'TV'}
+];
+var INTR=[
+  {id:'i1',ico:'🪟',lbl:'샷시교체'},{id:'i2',ico:'🍳',lbl:'주방교체'},
+  {id:'i3',ico:'🛁',lbl:'욕실리모델링'},{id:'i4',ico:'🖼',lbl:'도배/장판'},
+  {id:'i5',ico:'🔥',lbl:'보일러교체'},{id:'i6',ico:'💡',lbl:'LED조명'},
+  {id:'i7',ico:'🚪',lbl:'중문설치'},{id:'i8',ico:'🏠',lbl:'전체홈수리'},
+  {id:'i9',ico:'🎞',lbl:'필름시공'},{id:'i10',ico:'🏛',lbl:'현관인테리어'}
+];
+
+function G(id){return document.getElementById(id);}
+
+function init(){
+  buildAptGrid();
+  buildGrid('sg',STRUCT,sStr);
+  buildGrid('ag',APPL,sApp);
+  buildGrid('ig',INTR,sInt);
+  G('mv-di').min=new Date().toISOString().split('T')[0];
+}
+
+function buildAptGrid(){
+  var g=G('apt-grid');
+  AK.forEach(function(item){
+    var b=document.createElement('button');
+    b.type='button';b.className='apt-btn';b.id='apt-'+item.key;
+    b.innerHTML='<span class="ai">'+item.ico+'</span>'+item.label.replace('\n','<br>');
+    b.onclick=function(){
+      if(selApts.has(item.key)){selApts.delete(item.key);b.classList.remove('on');}
+      else{selApts.add(item.key);b.classList.add('on');}
+    };
+    g.appendChild(b);
+  });
+}
+
+function buildGrid(gid,items,sel){
+  var g=G(gid);
+  items.forEach(function(it){
+    var b=document.createElement('button');
+    b.type='button';b.className='fb';b.id=gid+it.id;
+    b.innerHTML='<span class="fi">'+it.ico+'</span>'+it.lbl.replace('\n','<br>');
+    b.onclick=function(){tog(b,it.id,sel);};
+    g.appendChild(b);
+  });
+}
+
+function buildCond(isSell){
+  var items=isSell?SELL_C:RENT_C, row=G('cond-row');
+  row.innerHTML='';sCond.clear();
+  G('cond-lbl').textContent='중복 선택 가능합니다';
+  items.forEach(function(it){
+    var b=document.createElement('button');
+    b.type='button';b.className='oib';b.id='c-'+it.id;
+    b.innerHTML='<span class="oi">'+it.ico+'</span>'+it.lbl.replace('\n','<br>');
+    b.onclick=function(){tog(b,it.id,sCond);};
+    row.appendChild(b);
+  });
+}
+
+function tog(btn,id,sel){
+  if(sel.has(id)){sel.delete(id);btn.classList.remove('on');}
+  else{sel.add(id);btn.classList.add('on');}
+  updBigo();
+}
+
+function updBigo(){
+  var hasAC=sApp.has('a1');
+  var ac=G('bigo-ac');
+  ac.className=hasAC?'':'hide';
+  if(!hasAC){
+    acSel=0;
+    for(var i=1;i<=6;i++){var b=G('ac-'+i);if(b)b.className='ac-cnt-btn';}
+    var bf=G('ac-full');if(bf)bf.className='ac-cnt-btn';
+  }
+}
+
+function selAC(n){
+  acSel=n;
+  for(var i=1;i<=6;i++){var b=G('ac-'+i);if(b)b.className='ac-cnt-btn'+(i===n?' on':'');}
+  var bf=G('ac-full');if(bf)bf.className='ac-cnt-btn'+(n==='full'?' on':'');
+}
+
+function togDir(d){
+  var btn=G('dir-'+d);
+  if(selDirs.has(d)){selDirs.delete(d);btn.className='dir-btn';}
+  else{selDirs.add(d);btn.className='dir-btn on';}
+}
+
+function selProp(t){
+  pType=t;
+  G('tp-apt').className='ib'+(t==='apt'?' ab':'');
+  G('tp-opt').className='ib'+(t==='opt'?' ab':'');
+}
+
+function selDeal(t){
+  dType=t;
+  var c={sell:'ar',rent:'ab',monthly:'ap'};
+  ['sell','rent','monthly'].forEach(function(x){G('dl-'+x).className='ib'+(x===t?' '+c[x]:'');});
+  updatePr(t);
+  buildCond(t==='sell');
+}
+
+function updatePr(t){
+  var g=G('prg');
+  if(t==='sell')g.innerHTML=mkPr('매매 희망가','price1');
+  else if(t==='rent')g.innerHTML=mkPr('전세 희망가','price1');
+  else g.innerHTML=mkPr('보증금 희망가','price1')+'<div style="margin-top:10px"></div>'+mkPr('월세 희망가','price2');
+}
+function mkPr(l,id){
+  return '<div class="prr"><div class="prl2">'+l+'</div><input class="pri" id="'+id+'" type="number" inputmode="numeric" placeholder="0"><div class="pru">만원</div></div>';
+}
+
+function selMove(t){
+  mType=t;
+  ['consult','immediate','date'].forEach(function(x){G('mv-'+x).className='ib'+(x===t?' ab':'');});
+  G('mv-dw').className=t==='date'?'':'hide';
+  if(t!=='date')G('dal').className='dal';
+}
+function onDate(){
+  var v=G('mv-di').value,l=G('dal');
+  if(v){
+    var p=v.split('-');
+    l.textContent=p[0]+'년 '+parseInt(p[1])+'월 '+parseInt(p[2])+'일 이후 가능';
+    l.className='dal vis';
+  }else l.className='dal';
+}
+
+function fmtPhone(el){
+  var v=el.value.replace(/[^0-9]/g,'');
+  if(v.length>11)v=v.slice(0,11);
+  if(v.length<=3)el.value=v;
+  else if(v.length<=7)el.value=v.slice(0,3)+'-'+v.slice(3);
+  else el.value=v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7);
+}
+
+function updCnt(){G('icnt').textContent=G('intro').value.length+'/100';}
+
+function collectData(){
+  var moveIn='';
+  if(mType==='consult') moveIn='협의';
+  else if(mType==='immediate') moveIn='즉시';
+  else moveIn=G('dal').textContent||'날짜 미선택';
+
+  var dirLabels={s:'남향',se:'남동향',sw:'남서향',e:'동향',w:'서향',n:'북향'};
+  var condLabels={c1:'실거주예정',c2:'세안고가능',c3:'빠른잔금가능',
+    c4:'반려동물키워요',c5:'외국인입니다',c6:'보증보험가입해요',c7:'전세대출받아요'};
+  var structLabels={s1:'테라스',s2:'복층구조',s3:'개인창고',s4:'알파룸',s5:'드레스룸',s6:'팬트리',s7:'베란다확장'};
+  var applLabels={a1:'시스템에어컨',a2:'벽걸이에어컨',a3:'스탠드에어컨',a4:'스타일러/드레서',
+    a5:'붙박이장',a6:'인덕션/가스레인지',a7:'빌트인냉장고',a8:'식기세척기',
+    a9:'음식물처리기',a10:'세탁기',a11:'빌트인오븐',a12:'TV'};
+  var intrLabels={i1:'샷시교체',i2:'주방교체',i3:'욕실리모델링',i4:'도배/장판',
+    i5:'보일러교체',i6:'LED조명',i7:'중문설치',i8:'전체홈수리',i9:'필름시공',i10:'현관인테리어'};
+
+  function toList(sel,labels){return Array.from(sel).map(function(k){return labels[k]||k;}).join(' | ');}
+
+  var acCountStr=acSel?(acSel==='full'?'풀에어컨':acSel+'대'):null;
+
+  return {
+    formType:'search',
+    propType:pType,
+    dealType:dType,
+    price1:G('price1')?G('price1').value:null,
+    price2:G('price2')?G('price2').value:null,
+    aptList:Array.from(selApts).join(' | ')||null,
+    dirList:toList(selDirs,dirLabels)||null,
+    clientName:G('cl-name').value.trim(),
+    clientCarrier:G('cl-carr').value,
+    clientPhone:G('cl-phone').value.trim(),
+    moveIn:moveIn,
+    condList:toList(sCond,condLabels)||null,
+    structList:toList(sStr,structLabels)||null,
+    applList:toList(sApp,applLabels)||null,
+    acCount:acCountStr,
+    intrList:toList(sInt,intrLabels)||null,
+    intro:G('intro').value.trim()||null,
+  };
+}
+
+async function doSubmit(){
+  if(!dType){alert('거래 유형을 선택해주세요');return;}
+  if(selApts.size===0){alert('아파트를 하나 이상 선택해주세요');return;}
+  if(!G('cl-name').value.trim()||!G('cl-phone').value.trim()){alert('의뢰인 정보를 입력해주세요');return;}
+  if(!mType){alert('입주 희망일을 선택해주세요');return;}
+
+  var btn=G('submit-btn');
+  if(btn){btn.disabled=true;btn.textContent='전송 중...';}
+
+  try{
+    var res=await fetch('/api/submit',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(collectData())
+    });
+    if(!res.ok) throw new Error('서버 오류');
+    G('mf').style.display='none';
+    G('done').style.display='flex';
+  }catch(e){
+    alert('전송 중 오류가 발생했습니다. 다시 시도해주세요.');
+    if(btn){btn.disabled=false;btn.textContent='접수하기';}
+  }
+}
+
+init();
+
+</script>
+</body>
+</html>
