@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
-<title>집구하기 접수 — 가드림</title>
+<title>집구하기 — 가드림</title>
 <style>
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -106,13 +106,15 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.6;cursor:pointer}
 .done-t{font-size:22px;font-weight:800;color:var(--g9);margin-bottom:8px}
 .done-s{font-size:14px;color:var(--g5);line-height:1.6}
 
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
 </style>
 </head>
 <body>
 
-<div class="hdr">
-  <div class="logo">가드림</div>
-  <div class="subh">집구하기 접수</div>
+
 </div>
 
 <div class="wrap" id="mf">
@@ -168,13 +170,8 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.6;cursor:pointer}
   <!-- 의뢰인 정보 -->
   <div class="card">
     <div class="st">의뢰인 정보</div>
-    <div class="or2">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
       <input class="si" id="cl-name"  type="text" placeholder="이름">
-      <select class="os" id="cl-carr">
-        <option value="">통신사</option>
-        <option>SKT</option><option>KT</option><option>LGU+</option>
-        <option>SKT 알뜰폰</option><option>KT 알뜰폰</option><option>LGU+ 알뜰폰</option>
-      </select>
       <input class="si" id="cl-phone" type="tel" inputmode="numeric" placeholder="010-0000-0000" oninput="fmtPhone(this)">
     </div>
   </div>
@@ -183,8 +180,8 @@ input[type=date]::-webkit-calendar-picker-indicator{opacity:.6;cursor:pointer}
   <div class="card">
     <div class="st">입주 희망일</div>
     <div class="g3">
-      <button type="button" class="ib" id="mv-consult"   onclick="selMove('consult')"><span class="ico">🤝</span>협의</button>
-      <button type="button" class="ib" id="mv-immediate" onclick="selMove('immediate')"><span class="ico">⚡</span>즉시</button>
+      <button type="button" class="ib" id="mv-consult"   onclick="selMove('consult')"><span class="ico">🤝</span>협의입주</button>
+      <button type="button" class="ib" id="mv-immediate" onclick="selMove('immediate')"><span class="ico">⚡</span>빠른입주</button>
       <button type="button" class="ib" id="mv-date"      onclick="selMove('date')"><span class="ico">📆</span>날짜선택</button>
     </div>
     <div class="hide" id="mv-dw">
@@ -420,8 +417,8 @@ function updCnt(){G('icnt').textContent=G('intro').value.length+'/100';}
 
 function collectData(){
   var moveIn='';
-  if(mType==='consult') moveIn='협의';
-  else if(mType==='immediate') moveIn='즉시';
+  if(mType==='consult') moveIn='협의입주';
+  else if(mType==='immediate') moveIn='빠른입주';
   else moveIn=G('dal').textContent||'날짜 미선택';
 
   var dirLabels={s:'남향',se:'남동향',sw:'남서향',e:'동향',w:'서향',n:'북향'};
@@ -447,7 +444,6 @@ function collectData(){
     aptList:Array.from(selApts).join(' | ')||null,
     dirList:toList(selDirs,dirLabels)||null,
     clientName:G('cl-name').value.trim(),
-    clientCarrier:G('cl-carr').value,
     clientPhone:G('cl-phone').value.trim(),
     moveIn:moveIn,
     condList:toList(sCond,condLabels)||null,
