@@ -29,10 +29,8 @@ module.exports = async (req, res) => {
       html,
     });
 
-    // ── Solapi 카카오 알림톡 (매물접수만 발송) ──────────────────────
-    if (isListing) {
-      await sendKakao(d);
-    }
+    // ── Solapi 카카오 알림톡 발송 ────────────────────────────────────
+    await sendKakao(d, isListing);
     // ────────────────────────────────────────────────────────────────
 
     return res.status(200).json({ success: true });
@@ -43,7 +41,7 @@ module.exports = async (req, res) => {
 };
 
 // ── Solapi 카카오 알림톡 발송 ────────────────────────────────────────
-async function sendKakao(d) {
+async function sendKakao(d, isListing) {
   const crypto = require('crypto');
   const date = new Date().toISOString();
   const salt = Math.random().toString(36).substring(2);
@@ -51,7 +49,8 @@ async function sendKakao(d) {
   hmac.update(date + salt);
   const signature = hmac.digest('hex');
 
-  const variables = buildKakaoListing(d);
+  const variables = isListing ? buildKakaoListing(d) : buildKakaoSearch(d);
+  const templateId = isListing ? process.env.KAKAO_TPL_LISTING : process.env.KAKAO_TPL_SEARCH;
 
   const response = await fetch('https://api.solapi.com/messages/v4/send', {
     method: 'POST',
@@ -65,7 +64,7 @@ async function sendKakao(d) {
         from: FROM_PHONE,
         kakaoOptions: {
           pfId: process.env.SOLAPI_PFID,
-          templateId: process.env.KAKAO_TPL_LISTING,
+          templateId: templateId,
           variables,
         },
       },
@@ -106,6 +105,26 @@ function buildKakaoListing(d) {
     '#{연락처}': d.ownerPhone || '',
     '#{거주상태}': 거주상태,
     '#{입주가능일}': d.moveIn || '',
+  };
+}
+
+// ── 카카오 알림톡 변수 빌더: 집구하기 ──────────────────────────────
+function buildKakaoSearch(d) {
+  const dealLabel = { sell: '매매', rent: '전세', monthly: '월세' }[d.dealType] || d.dealType;
+
+  let 금액 = '';
+  if (d.dealType === 'sell') 금액 = num(d.price1);
+  else if (d.dealType === 'rent') 금액 = `전세 ${num(d.price1)}`;
+  else 금액 = `보증금 ${num(d.price1)} / 월 ${num(d.price2)}`;
+
+  return {
+    '#{유형}': d.propType === 'apt' ? '아파트' : '오피스텔',
+    '#{거래}': dealLabel,
+    '#{금액}': 금액,
+    '#{아파트}': d.aptList || '',
+    '#{이름}': d.clientName || '',
+    '#{연락처}': d.clientPhone || '',
+    '#{입주희망일}': d.moveIn || '',
   };
 }
 
