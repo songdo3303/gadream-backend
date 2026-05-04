@@ -3,6 +3,7 @@ const { Resend } = require('resend');
 const resend = new Resend(process.env.RESEND_API_KEY);
 const TO_EMAIL = 'songdo3303@gmail.com';
 const TO_PHONE = '010-7548-3222';
+const FROM_PHONE = '01075483222'; // 솔라피에 등록된 발신번호
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -28,8 +29,10 @@ module.exports = async (req, res) => {
       html,
     });
 
-    // ── Solapi 카카오 알림톡 (템플릿 승인 후 활성화) ──────────────
-    // await sendKakao(d, isListing);
+    // ── Solapi 카카오 알림톡 (매물접수만 발송) ──────────────────────
+    if (isListing) {
+      await sendKakao(d);
+    }
     // ────────────────────────────────────────────────────────────────
 
     return res.status(200).json({ success: true });
@@ -38,6 +41,73 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: '전송 실패', detail: err.message });
   }
 };
+
+// ── Solapi 카카오 알림톡 발송 ────────────────────────────────────────
+async function sendKakao(d) {
+  const crypto = require('crypto');
+  const date = new Date().toISOString();
+  const salt = Math.random().toString(36).substring(2);
+  const hmac = crypto.createHmac('sha256', process.env.SOLAPI_SECRET);
+  hmac.update(date + salt);
+  const signature = hmac.digest('hex');
+
+  const variables = buildKakaoListing(d);
+
+  const response = await fetch('https://api.solapi.com/messages/v4/send', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `HMAC-SHA256 apiKey=${process.env.SOLAPI_APIKEY}, date=${date}, salt=${salt}, signature=${signature}`,
+    },
+    body: JSON.stringify({
+      message: {
+        to: TO_PHONE,
+        from: FROM_PHONE,
+        kakaoOptions: {
+          pfId: process.env.SOLAPI_PFID,
+          templateId: process.env.KAKAO_TPL_LISTING,
+          variables,
+        },
+      },
+    }),
+  });
+
+  const result = await response.json();
+  if (!response.ok) {
+    console.error('솔라피 발송 실패:', result);
+    throw new Error(result.message || '알림톡 발송 실패');
+  }
+  return result;
+}
+
+// ── 카카오 알림톡 변수 빌더: 매물접수 ──────────────────────────────
+function buildKakaoListing(d) {
+  const dealLabel = { sell: '매매', rent: '전세', monthly: '월세' }[d.dealType] || d.dealType;
+
+  let 금액 = '';
+  if (d.dealType === 'sell') 금액 = num(d.price1);
+  else if (d.dealType === 'rent') 금액 = `전세 ${num(d.price1)}`;
+  else 금액 = `보증금 ${num(d.price1)} / 월 ${num(d.price2)}`;
+
+  const 거주상태 = {
+    vacant: '공실',
+    owner: '집주인 거주',
+    tenant: '세입자 거주',
+  }[d.residence] || d.residence;
+
+  return {
+    '#{유형}': d.propType === 'apt' ? '아파트' : '오피스텔',
+    '#{거래}': dealLabel,
+    '#{금액}': 금액,
+    '#{아파트}': d.aptName || '',
+    '#{동}': d.dong || '',
+    '#{호}': d.ho || '',
+    '#{이름}': d.ownerName || '',
+    '#{연락처}': d.ownerPhone || '',
+    '#{거주상태}': 거주상태,
+    '#{입주가능일}': d.moveIn || '',
+  };
+}
 
 // ── 이메일 HTML: 매물내놓기 ─────────────────────────────────────────
 function buildListingHtml(d) {
@@ -170,37 +240,6 @@ ${d.intro ? section('💬 원하는 집 소개', row('내용', d.intro)) : ''}
 </div>
 </body></html>`;
 }
-
-// ── Solapi 카카오 알림톡 (템플릿 승인 후 주석 해제) ─────────────────
-// async function sendKakao(d, isListing) {
-//   const crypto = require('crypto');
-//   const date = new Date().toISOString();
-//   const salt = Math.random().toString(36).substring(2);
-//   const hmac = crypto.createHmac('sha256', process.env.SOLAPI_SECRET);
-//   hmac.update(date + salt);
-//   const signature = hmac.digest('hex');
-//
-//   const message = isListing ? buildKakaoListing(d) : buildKakaoSearch(d);
-//
-//   await fetch('https://api.solapi.com/messages/v4/send', {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json',
-//       Authorization: `HMAC-SHA256 apiKey=${process.env.SOLAPI_APIKEY}, date=${date}, salt=${salt}, signature=${signature}`,
-//     },
-//     body: JSON.stringify({
-//       message: {
-//         to: TO_PHONE,
-//         from: '등록된발신번호',   // Solapi에 등록한 발신번호로 교체
-//         kakaoOptions: {
-//           pfId: process.env.SOLAPI_PFID,
-//           templateId: isListing ? process.env.KAKAO_TPL_LISTING : process.env.KAKAO_TPL_SEARCH,
-//           variables: message,
-//         },
-//       },
-//     }),
-//   });
-// }
 
 function num(v) {
   if (!v) return null;
