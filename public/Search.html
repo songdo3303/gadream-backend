@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>원하는 집·상가를 찾고 싶어요</title>
+<style>
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --pr:#2563EB;--prl:#EFF6FF;
+  --or:#EA580C;--orl:#FFF7ED;
+  --re:#EF4444;--reb:#FEF2F2;--rer:#FECACA;
+  --gr:#059669;--grb:#ECFDF5;--grr:#A7F3D0;
+  --g0:#F9FAFB;--g1:#F3F4F6;--g2:#E5E7EB;
+  --g4:#9CA3AF;--g5:#6B7280;--g7:#374151;--g9:#111827;
+  --r:12px;--rs:8px
+}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#F0F4F8;min-height:100vh;color:var(--g9)}
+.hdr{background:#fff;padding:14px 20px;border-bottom:1px solid var(--g2);position:sticky;top:0;z-index:10}
+.logo{font-size:18px;font-weight:800;color:var(--pr);letter-spacing:-.5px}
+.subh{font-size:12px;color:var(--g5);margin-top:1px}
+.wrap{max-width:480px;margin:0 auto;padding:16px 16px 56px;display:flex;flex-direction:column;gap:12px}
+.card{background:#fff;border-radius:var(--r);padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.hide{display:none!important}
+.st{font-size:14px;font-weight:700;color:var(--g7);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.st::before{content:'';width:3px;height:14px;background:var(--pr);border-radius:2px;display:inline-block;flex-shrink:0}
+.g1{display:grid;grid-template-columns:1fr;gap:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.g6{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+/* 그리드 버튼 가로 잘림 방지 */
+.ib,.apt-btn,.dir-btn,.fb,.oib{min-width:0;overflow-wrap:break-word;word-break:keep-all}
+/* 아이콘 버튼 */
+.ib{border:2px solid var(--g2);border-radius:var(--rs);padding:14px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;background:#fff;transition:all .15s;font-size:11px;font-weight:600;color:var(--g5);user-select:none;-webkit-tap-highlight-color:transparent;font-family:inherit;line-height:1.3;text-align:center}
+.ib .ico{font-size:22px}
+.ib:active{transform:scale(.97)}
+.ib.ab{border-color:var(--pr);background:var(--prl);color:var(--pr)}
+.ib.ar{border-color:var(--re);background:var(--reb);color:var(--re)}
+.ib.ap{border-color:#7C3AED;background:#F5F3FF;color:#7C3AED}
+/* 아파트 체크 버튼 */
+.apt-btn{border:2px solid var(--g2);border-radius:var(--rs);padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;background:#fff;transition:all .15s;font-size:11px;font-weight:600;color:var(--g5);user-select:none;-webkit-tap-highlight-color:transparent;font-family:inherit;line-height:1.3;text-align:center}
+.apt-btn .ai{font-size:20px}
+.apt-btn.on{border-color:var(--pr);background:var(--prl);color:var(--pr)}
+/* 방향 버튼 */
+.dir-btn{border:1.5px solid var(--g2);border-radius:var(--rs);padding:11px 6px;font-size:12px;font-weight:600;color:var(--g5);background:#fff;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit;-webkit-tap-highlight-color:transparent;line-height:1.3}
+.dir-btn.on{border-color:var(--pr);background:var(--prl);color:var(--pr)}
+/* 토글 */
+.tr{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tb{border:1.5px solid var(--g2);border-radius:var(--rs);padding:11px 6px;font-size:12px;font-weight:600;color:var(--g5);background:#fff;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.tb:active{transform:scale(.97)}
+.tb.ao{border-color:var(--or);background:var(--orl);color:var(--or)}
+.tb.ab{border-color:var(--pr);background:var(--prl);color:var(--pr)}
+/* 금액 */
+.prg{display:flex;flex-direction:column;gap:10px}
+.yld{margin-top:10px;display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-radius:var(--rs);background:var(--g1);font-size:13px;font-weight:700;color:var(--g5);transition:all .15s}
+.yld.on{background:var(--prl);color:var(--pr)}
+.yld b{font-size:18px;font-weight:800}
+.depc{display:flex;align-items:center;gap:8px;padding:11px 14px;border:1.5px solid var(--g2);border-radius:var(--rs);margin-bottom:8px}
+.depl{font-size:13px;font-weight:600;color:var(--g7)}
+.depv{margin-left:auto;font-size:15px;font-weight:800;color:var(--g9)}
+.depu{font-size:12px;color:var(--g5)}
+.depspin{display:flex;flex-direction:column;gap:2px;margin-left:4px}
+.depspin .depb{width:30px;height:18px;border:1.5px solid var(--g2);border-radius:5px;background:#fff;color:var(--pr);font-size:9px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;padding:0}
+.depspin .depb:active{background:var(--prl)}
+.prr{display:flex;align-items:center;border:1.5px solid var(--g2);border-radius:var(--rs);overflow:hidden;transition:border-color .15s}
+.prr:focus-within{border-color:var(--pr)}
+.prl2{padding:12px 10px;font-size:12px;font-weight:600;color:var(--g5);background:var(--g0);border-right:1px solid var(--g2);white-space:nowrap;min-width:82px}
+.pri{flex:1;border:none;outline:none;padding:12px 8px;font-size:15px;font-weight:600;color:var(--g9);text-align:right;font-family:inherit;min-width:0}
+.pru{padding:12px 10px 12px 2px;font-size:13px;color:var(--g4)}
+/* 입력 */
+.si{border:1.5px solid var(--g2);border-radius:var(--rs);padding:12px 12px;font-size:14px;font-family:inherit;outline:none;color:var(--g9);transition:border-color .15s;width:100%;background:#fff}
+.si:focus{border-color:var(--pr)}
+.si::placeholder{color:var(--g4)}
+.or2{display:grid;grid-template-columns:1fr 78px 1fr;gap:8px;align-items:stretch}
+.os{border:1.5px solid var(--g2);border-radius:var(--rs);padding:12px 4px;font-size:12px;font-family:inherit;outline:none;color:var(--g9);background:#fff;-webkit-appearance:none;appearance:none;text-align:center;cursor:pointer;width:100%;transition:border-color .15s}
+.os:focus{border-color:var(--pr)}
+/* 날짜 */
+.ah{font-size:12px;color:var(--g5);margin-bottom:12px;padding:8px 10px;background:var(--g0);border-radius:6px;display:none}
+.ah.vis{display:block}
+input[type=date]{width:100%;border:1.5px solid var(--g2);border-radius:var(--rs);padding:12px 14px;font-size:14px;font-family:inherit;outline:none;color:var(--g9);-webkit-appearance:none;background:#fff;margin-top:10px;transition:border-color .15s}
+input[type=date]:focus{border-color:var(--pr)}
+input[type=date]::-webkit-calendar-picker-indicator{opacity:.6;cursor:pointer}
+.dal{margin-top:8px;font-size:13px;font-weight:600;color:var(--pr);padding:8px 12px;background:var(--prl);border-radius:var(--rs);display:none}
+.dal.vis{display:block}
+/* 옵션 */
+.olbl{font-size:12px;color:var(--g5);margin-bottom:10px}
+.osr{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.osr::-webkit-scrollbar{display:none}
+.oib{border:1.5px solid var(--g2);border-radius:var(--rs);padding:12px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;background:#fff;transition:all .15s;font-size:11px;font-weight:600;color:var(--g5);white-space:nowrap;flex-shrink:0;min-width:64px;font-family:inherit;user-select:none;-webkit-tap-highlight-color:transparent;line-height:1.3;text-align:center}
+.oib .oi{font-size:24px}
+.oib:active{transform:scale(.97)}
+.oib.on{border-color:var(--pr);background:var(--prl);color:var(--pr)}
+/* feat */
+.ftt{font-size:14px;font-weight:700;color:var(--g7);margin-bottom:4px}
+.fts{font-size:11px;color:var(--g4);margin-bottom:10px}
+.fb{border:1.5px solid var(--g2);border-radius:var(--rs);padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;background:#fff;transition:all .15s;font-size:10px;font-weight:600;color:var(--g5);font-family:inherit;text-align:center;line-height:1.2;user-select:none;-webkit-tap-highlight-color:transparent}
+.fb .fi{font-size:20px}
+.fb.on{border-color:var(--pr);background:var(--prl);color:var(--pr)}
+.sdv{border:none;border-top:1px solid var(--g1);margin:14px 0}
+.mt10{margin-top:10px}
+/* 비고 AC */
+.ac-cnt-btn{width:28px;height:28px;border:1.5px solid var(--g2);border-radius:6px;background:#fff;font-size:13px;font-weight:700;color:var(--g5);cursor:pointer;font-family:inherit;transition:all .15s;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center}
+.ac-cnt-btn.on{border-color:var(--pr);background:var(--prl);color:var(--pr)}
+/* intro */
+.itw{position:relative}
+.stab{display:flex;gap:6px;margin-bottom:14px;background:var(--g1);border-radius:var(--rs);padding:4px}
+.stb{flex:1;border:none;background:transparent;padding:9px 4px;border-radius:6px;font-size:13px;font-weight:700;color:var(--g5);font-family:inherit;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:4px}
+.stb.on{background:#fff;color:var(--pr);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.stb.dis{color:var(--g4);cursor:not-allowed}
+.soon{font-size:9px;font-weight:600;background:var(--g2);color:var(--g5);padding:1px 5px;border-radius:8px}
+.sw{position:relative}
+.sel{width:100%;padding:13px 32px 13px 14px;border:1.5px solid var(--g2);border-radius:var(--rs);font-size:14px;font-weight:600;color:var(--g9);background:#fff;-webkit-appearance:none;appearance:none;cursor:pointer;font-family:inherit;outline:none;transition:border-color .15s}
+.sel:focus{border-color:var(--pr)}
+.sa{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--g4);font-size:11px;pointer-events:none}
+.ita{width:100%;min-height:70px;border:1.5px solid var(--g2);border-radius:var(--rs);padding:12px 48px 12px 12px;font-size:14px;font-family:inherit;outline:none;color:var(--g9);resize:none;transition:border-color .15s}
+.ita:focus{border-color:var(--pr)}
+.ita::placeholder{color:var(--g4)}
+.itc{position:absolute;right:10px;bottom:10px;font-size:11px;color:var(--g4)}
+/* submit */
+.bf{width:100%;padding:16px;background:var(--pr);color:#fff;border:none;border-radius:var(--r);font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.bf:active{transform:scale(.98);background:#1D4ED8}
+/* done */
+.done{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;text-align:center;padding:40px 20px}
+.done-i{font-size:64px;margin-bottom:20px}
+.done-t{font-size:22px;font-weight:800;color:var(--g9);margin-bottom:8px}
+.done-s{font-size:14px;color:var(--g5);line-height:1.6}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">원하는 집·상가를 찾고 싶어요.</div>
+</div>
+
+<div class="wrap" id="mf">
+
+  <!-- 매물 유형 -->
+  <div class="card">
+    <div class="st">매물 유형을 선택해주세요</div>
+    <div class="g3">
+      <button type="button" class="ib" id="tp-apt"   onclick="selProp('apt')"><span class="ico">🏢</span>아파트</button>
+      <button type="button" class="ib" id="tp-opt"   onclick="selProp('opt')"><span class="ico">🏨</span>오피스텔</button>
+      <button type="button" class="ib" id="tp-store" onclick="selProp('store')"><span class="ico">🏪</span>상가</button>
+    </div>
+  </div>
+
+  <!-- 거래 유형 -->
+  <div class="card">
+    <div class="st">거래 유형을 선택해주세요</div>
+    <div class="g3" id="deal-row"></div>
+  </div>
+
+  <!-- 매물 선택 / 업종 선택 -->
+  <div class="card" id="sel-card">
+    <div class="st" id="sel-title">원하는 아파트를 선택해주세요</div>
+    <div style="font-size:12px;color:var(--g5);margin-bottom:12px" id="sel-note">중복 선택 가능합니다</div>
+    <div id="sel-body"></div>
+    <input class="si" id="biz-detail" type="text" placeholder="상세업종 예) 한식, 무인카페" style="display:none;margin-top:12px">
+  </div>
+
+  <!-- 금액 -->
+  <div class="card">
+    <div class="st">희망 금액을 입력해주세요</div>
+    <div class="prg" id="prg"></div>
+  </div>
+
+  <!-- 상가단지 선택 (상가일 때만) -->
+  <div class="card hide" id="store-complex-card">
+    <div class="stab">
+      <button type="button" class="stb on" id="stab-complex" onclick="selStoreKind('complex')">단지상가</button>
+      <button type="button" class="stb dis" id="stab-plaza" disabled>프라자상가 <span class="soon">준비중</span></button>
+    </div>
+    <div class="st" style="font-size:13px">상가단지를 선택해주세요</div>
+    <div style="font-size:12px;color:var(--g5);margin-bottom:12px">중복 선택 가능합니다</div>
+    <div id="store-sel-body"></div>
+  </div>
+
+  <!-- 임대인 대출 (아파트/오피스텔 전·월세에서만) -->
+  <div class="card hide" id="loan-card">
+    <div class="st">임대인 대출</div>
+    <div style="font-size:12px;color:var(--g5);margin-bottom:12px">중복 선택 가능합니다</div>
+    <div id="loan-row"></div>
+  </div>
+
+  <!-- 선호 방향 / 상세업종 -->
+  <div class="card" id="dir-card">
+    <div class="st" id="dir-title">선호 방향을 선택해주세요</div>
+    <div style="font-size:12px;color:var(--g5);margin-bottom:12px" id="dir-note">중복 선택 가능합니다</div>
+    <div id="dir-body"></div>
+  </div>
+
+  <!-- 선호 층수 -->
+  <div class="card">
+    <div class="st" id="floor-title">선호 층수를 선택해주세요</div>
+    <div style="font-size:12px;color:var(--g5);margin-bottom:12px">중복 선택 가능합니다</div>
+    <div id="floor-body"></div>
+  </div>
+
+  <!-- 의뢰인 정보 -->
+  <div class="card">
+    <div class="st">의뢰인 정보</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <input class="si" id="cl-name"  type="text" placeholder="이름">
+      <input class="si" id="cl-phone" type="tel" inputmode="numeric" placeholder="010-0000-0000" oninput="fmtPhone(this)">
+    </div>
+  </div>
+
+  <!-- 입주 희망일 -->
+  <div class="card">
+    <div class="st" id="movein-title">입주 희망일</div>
+    <div class="g3">
+      <button type="button" class="ib" id="mv-consult"   onclick="selMove('consult')"><span class="ico">🤝</span><span id="mvl-consult">협의입주</span></button>
+      <button type="button" class="ib" id="mv-immediate" onclick="selMove('immediate')"><span class="ico">⚡</span><span id="mvl-immediate">빠른입주</span></button>
+      <button type="button" class="ib" id="mv-date"      onclick="selMove('date')"><span class="ico">📆</span><span id="mvl-date">날짜선택</span></button>
+    </div>
+    <div class="hide" id="mv-dw">
+      <input type="date" id="mv-di" onchange="onDate()">
+      <div class="dal" id="dal"></div>
+    </div>
+  </div>
+
+  <!-- 원하는 상가 조건 / 의뢰인 상황 -->
+  <div class="card">
+    <div class="st" id="cond-title">현재 의뢰인 상황</div>
+    <div class="olbl" id="cond-lbl">거래 유형을 먼저 선택해주세요</div>
+    <div id="cond-row"></div>
+  </div>
+
+  <!-- 생활 및 구조 + 가전 가구 -->
+  <div class="card" id="opts-card">
+    <div class="ftt" id="struct-title">생활 및 구조 옵션</div>
+    <div class="fts">원하는 항목을 선택하세요</div>
+    <div id="sg"></div>
+
+    <div id="appl-section">
+      <hr class="sdv">
+      <div class="ftt">가전 및 가구 옵션</div>
+      <div class="fts" id="ag-sub">원하는 항목을 선택하세요</div>
+      <div id="ag-wrap"></div>
+
+      <!-- 비고란 -->
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+        <div id="bigo-ac" class="hide" style="display:flex;align-items:center;gap:8px;border:1.5px solid var(--g2);border-radius:var(--rs);padding:11px 14px;flex-wrap:wrap">
+          <span style="font-size:13px;font-weight:600;color:var(--g7)">❄ 시스템에어컨 갯수</span>
+          <div style="display:flex;gap:5px;margin-left:auto">
+            <button type="button" class="ac-cnt-btn" id="ac-1" onclick="selAC(1)">1</button>
+            <button type="button" class="ac-cnt-btn" id="ac-2" onclick="selAC(2)">2</button>
+            <button type="button" class="ac-cnt-btn" id="ac-3" onclick="selAC(3)">3</button>
+            <button type="button" class="ac-cnt-btn" id="ac-4" onclick="selAC(4)">4</button>
+            <button type="button" class="ac-cnt-btn" id="ac-5" onclick="selAC(5)">5</button>
+            <button type="button" class="ac-cnt-btn" id="ac-6" onclick="selAC(6)">6</button>
+            <button type="button" class="ac-cnt-btn" id="ac-full" onclick="selAC('full')" style="width:auto;padding:0 8px;font-size:11px">풀에어컨</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 한줄 소개 -->
+  <div class="card">
+    <div class="st" id="intro-title">원하는 집 한줄 소개</div>
+    <div class="itw">
+      <textarea class="ita" id="intro" maxlength="100" placeholder="예: 초등학교 근처, 주차 2대 필요, 1층 제외" oninput="updCnt()"></textarea>
+      <span class="itc" id="icnt">0/100</span>
+    </div>
+  </div>
+
+  <button class="bf" id="submit-btn" onclick="doSubmit()">중개 의뢰 보내기</button>
+</div>
+
+<div class="done" id="done">
+  <div class="done-i">✅</div>
+  <div class="done-t">접수가 완료됐습니다!</div>
+  <div class="done-s">담당자가 곧 연락드리겠습니다.<br>감사합니다 😊</div>
+</div>
+
+<script>
+
+/* ===== 데이터 ===== */
+var APT=[
+  {key:'더샵송도마리나베이',           label:'더샵\n송도마리나베이'},
+  {key:'오션파크베르디움',             label:'오션파크\n베르디움'},
+  {key:'e편한세상송도',                label:'e편한세상\n송도'},
+  {key:'랜드마크시티센트럴더샵아파트',   label:'랜드마크시티\n센트럴더샵'},
+  {key:'송도SK뷰',                    label:'송도\nSK뷰'},
+  {key:'호반써밋송도아파트',           label:'호반써밋\n송도'}
+];
+var OPT=[
+  {key:'랜드마크시티센트럴더샵오피스텔',   label:'랜드마크시티\n센트럴더샵'},
+  {key:'호반써밋송도오피스텔',             label:'호반써밋\n송도'},
+  {key:'힐스테이트송도더테라스오피스텔',    label:'힐스테이트\n송도더테라스'}
+];
+/* 업종 */
+var BIZ=[
+  {ico:'🍽',lbl:'음식점'},{ico:'☕',lbl:'카페'},{ico:'💇',lbl:'뷰티'},
+  {ico:'📚',lbl:'학원'},{ico:'🏋',lbl:'스포츠'},{ico:'🤖',lbl:'무인'},
+  {ico:'🧑‍💼',lbl:'1인창업'},{ico:'🏥',lbl:'병·의원'},{ico:'🛍',lbl:'판매점'},
+  {ico:'🍸',lbl:'유흥업소'},{ico:'➕',lbl:'기타업종'}
+];
+
+var DIRS=[
+  {id:'s',lbl:'남향'},{id:'se',lbl:'남동향'},{id:'sw',lbl:'남서향'},
+  {id:'e',lbl:'동향'},{id:'w',lbl:'서향'},{id:'n',lbl:'북향'},
+  {id:'ne',lbl:'북동향'},{id:'nw',lbl:'북서향'}
+];
+/* 선호 층수 — 아파트/오피스텔. f6(필로티)는 오피스텔이면 '비주거공간 위'로 표기 */
+var FLOOR_RES=[
+  {id:'f1',lbl:'1층'},{id:'f2',lbl:'저층'},{id:'f3',lbl:'중층'},{id:'f4',lbl:'고층'},
+  {id:'f5',lbl:'탑층'},{id:'f6',lbl:'필로티'},{id:'f7',lbl:'대피층 위'},{id:'f8',lbl:'대피층 아래'}
+];
+var FLOOR_STORE=[{id:'fs1',lbl:'지하'},{id:'fs2',lbl:'1층'},{id:'fs3',lbl:'2층이상'}];
+
+var DEAL_RES=[
+  {id:'sell',ico:'🔑',lbl:'매매',c:'ar'},
+  {id:'rent',ico:'🏠',lbl:'전세',c:'ab'},
+  {id:'monthly',ico:'📅',lbl:'월세',c:'ap'}
+];
+var DEAL_STORE=[
+  {id:'storesale', ico:'🔑',lbl:'상가매매',c:'ar'},
+  {id:'storelease',ico:'🏪',lbl:'상가임대',c:'ab'}
+];
+
+var COND_SELL=[
+  {id:'c1',ico:'🏡',lbl:'실거주예정'},
+  {id:'c2',ico:'📋',lbl:'세안고가능'},
+  {id:'c3',ico:'⚡',lbl:'빠른잔금가능'},
+  {id:'c8',ico:'🕐',lbl:'늦은잔금\n원해요'}
+];
+var COND_RENT_APT=[
+  {id:'c4',ico:'🐾',lbl:'반려동물\n키워요'},
+  {id:'c5',ico:'🌍',lbl:'외국인\n입니다'},
+  {id:'c6',ico:'🛡',lbl:'보증보험\n가입해요'},
+  {id:'c7',ico:'🏦',lbl:'전·월세대출\n받아요'},
+  {id:'c9',ico:'📜',lbl:'전세권등기\n원해요'},
+  {id:'c10',ico:'⏱',lbl:'단기임대\n원해요'}
+];
+var COND_RENT_OPT=[
+  {id:'c4',ico:'🐾',lbl:'반려동물\n키워요'},
+  {id:'c5',ico:'🌍',lbl:'외국인\n입니다'},
+  {id:'c6',ico:'🛡',lbl:'보증보험\n가입해요'},
+  {id:'c7',ico:'🏦',lbl:'전·월세대출\n받아요'},
+  {id:'c10',ico:'⏱',lbl:'단기임대\n원해요'},
+  {id:'c11',ico:'🪪',lbl:'전입신고\n합니다'}
+];
+/* 희망하는 임대 조건 (상가임대) */
+var COND_STORE=[
+  {id:'sl1',ico:'🏚',lbl:'공실희망'},
+  {id:'sl2',ico:'📑',lbl:'포괄양수\n가능'},
+  {id:'sl3',ico:'🚫',lbl:'권리금無\n선호'},
+  {id:'sl4',ico:'📦',lbl:'시설인수\n선호'},
+  {id:'sl5',ico:'🏪',lbl:'프랜차이즈\n입점'},
+  {id:'sl6',ico:'⚡',lbl:'빠른진행\n가능'},
+  {id:'sl7',ico:'💬',lbl:'임대조건\n조율 희망'},
+  {id:'sl8',ico:'🆓',lbl:'렌트프리\n희망'}
+];
+/* 매수 목적 및 준비상황 (상가매매) */
+var COND_STORE_SALE=[
+  {id:'sm1',ico:'🏬',lbl:'직접사용\n예정'},
+  {id:'sm2',ico:'💰',lbl:'임대수익\n목적'},
+  {id:'sm3',ico:'🛠',lbl:'시설·영업\n인수 희망'},
+  {id:'sm4',ico:'🚫',lbl:'같은 업종\n제한 선호'},
+  {id:'sm5',ico:'💬',lbl:'조건 조율\n희망'},
+  {id:'sm6',ico:'⚡',lbl:'빠른 진행\n가능'}
+];
+/* 임대인 대출 (아파트/오피스텔 전·월세) */
+var LOAN=[
+  {id:'ln1',lbl:'무융자 선호'},
+  {id:'ln2',lbl:'전액말소 조건'},
+  {id:'ln3',lbl:'보증보험 가입 희망'}
+];
+/* 상가매매 운영방식 */
+var STORE_RUN=[
+  {id:'self',lbl:'본인운영'},
+  {id:'lease',lbl:'임대운영'}
+];
+
+/* 생활 및 구조 — 아파트/오피스텔 */
+var STRUCT_RES=[
+  {id:'s1',ico:'🌿',lbl:'테라스'},{id:'s2',ico:'🏗',lbl:'복층구조'},
+  {id:'s4',ico:'🏠',lbl:'알파룸'},{id:'s7',ico:'🪟',lbl:'베란다확장'},
+  {id:'s6',ico:'🧺',lbl:'팬트리'}
+];
+/* 생활 및 구조 — 상가 */
+var STRUCT_STORE=[
+  {id:'st7',ico:'🌳',lbl:'외부공간有'},{id:'st4',ico:'📏',lbl:'높은층고'},
+  {id:'st8',ico:'🔧',lbl:'노출천장'},{id:'st5',ico:'🛗',lbl:'엘리베이터有'},
+  {id:'st6',ico:'🅿',lbl:'주차장有'}
+];
+/* 가전 및 가구 — 아파트 */
+var APPL_APT=[
+  {id:'a1',ico:'❄',lbl:'시스템에어컨'},{id:'a13',ico:'🌀',lbl:'스탠드에어컨'},
+  {id:'a2',ico:'🌬',lbl:'벽걸이에어컨'},{id:'a5',ico:'🚪',lbl:'붙박이장'},
+  {id:'a7',ico:'🧊',lbl:'빌트인냉장고'},{id:'a11',ico:'☀',lbl:'빌트인오븐'}
+];
+/* 가전 및 가구 — 오피스텔 */
+var APPL_OPT=[
+  {id:'a1',ico:'❄',lbl:'시스템에어컨'},{id:'a13',ico:'🌀',lbl:'스탠드에어컨'},
+  {id:'a2',ico:'🌬',lbl:'벽걸이에어컨'},{id:'a5',ico:'🚪',lbl:'붙박이장'},
+  {id:'a7',ico:'🧊',lbl:'(빌트인)냉장고'},{id:'a4',ico:'👔',lbl:'스타일러'},
+  {id:'a14',ico:'👗',lbl:'드레스룸'},{id:'a6',ico:'🔥',lbl:'인덕션/가스레인지'},
+  {id:'a10',ico:'🫧',lbl:'세탁기'},{id:'a12',ico:'📺',lbl:'TV'},
+  {id:'a15',ico:'🍲',lbl:'전자레인지'},{id:'a16',ico:'🌐',lbl:'인터넷'}
+];
+
+/* ===== 상태 ===== */
+var pType='apt',dType=null,mType=null;
+var selApts=new Set(),selDirs=new Set(),selFloors=new Set();
+var storeBiz=null;
+var selStores=new Set();
+var sCond=new Set(),sStr=new Set(),sApp=new Set(),sLoan=new Set();
+var storeRun=null;
+var acSel=0;
+
+function G(id){return document.getElementById(id);}
+
+/* 칩 개수에 맞춰 컬럼을 꽉 채우기 */
+function colsFor(n){
+  if(n<=5)return n;
+  if(n%4===0)return 4;
+  if(n%3===0)return 3;
+  return 4;
+}
+function setGrid(el,n){
+  el.removeAttribute('class');
+  el.style.display='grid';
+  el.style.gridTemplateColumns='repeat('+colsFor(n)+',1fr)';
+  el.style.gap='8px';
+}
+function setBlock(el){
+  el.removeAttribute('class');
+  el.style.display='block';
+  el.style.gridTemplateColumns='';
+  el.style.gap='';
+}
+
+/* ===== 초기화 ===== */
+function init(){
+  G('mv-di').min=new Date().toISOString().split('T')[0];
+  selProp('apt');
+}
+
+/* ===== 매물 유형 ===== */
+function selProp(t){
+  pType=t; dType=null;
+  ['apt','opt','store'].forEach(function(x){G('tp-'+x).className='ib'+(x===t?' ab':'');});
+  var st=(t==='store');
+  G('store-complex-card').className='card'+(st?'':' hide');
+  if(st)buildStoreSel();
+  G('intro-title').textContent = st?'상가 한줄 소개':'원하는 집 한줄 소개';
+  G('intro').placeholder = st?'예: 초등학교 맞은편, 유동인구多, 노출 좋은 상가':'예: 초등학교 근처, 주차 2대 필요, 1층 제외';
+  G('movein-title').textContent = st?'거래 희망 시점':'입주 희망일';
+  G('mvl-consult').textContent = st?'협의 가능':'협의입주';
+  G('mvl-immediate').textContent = st?'즉시 사용':'빠른입주';
+  G('mvl-date').textContent = st?'날짜 지정':'날짜선택';
+  G('cond-title').textContent = st?'희망하는 임대 조건을 선택해주세요':'현재 의뢰인 상황';
+  buildDeal();
+  buildSelCard();
+  buildDirCard();
+  buildFloorCard();
+  updatePr(null);
+  updLoan();
+  buildCond();
+  buildStructCard();
+  buildApplCard();
+  updBigo();
+}
+
+function baseName(n){return n.replace(/\(.*?\)/g,'').replace(/(아파트|오피스텔)$/,'').trim();}
+var STORE_COMPLEXES=['마리나베이상가','오션파크상가','e편한상가','랜시티상가','송도SK뷰상가','호반써밋송도상가','힐테더테라스상가'];
+function buildStoreSel(){
+  var body=G('store-sel-body');if(!body)return;
+  selStores.clear();
+  body.innerHTML='';
+  var list=[{key:'any',label:'단지\n상관없음',ico:'🏘'}];
+  STORE_COMPLEXES.forEach(function(nm){ list.push({key:nm,label:nm,ico:'🏪'}); });
+  setGrid(body,list.length);
+  list.forEach(function(it){
+    var b=document.createElement('button');
+    b.type='button'; b.className='apt-btn';
+    b.innerHTML='<span class="ai">'+it.ico+'</span>'+it.label.replace('\n','<br>');
+    b.onclick=function(){
+      if(it.key==='any'){
+        selStores.clear();
+        Array.from(body.children).forEach(function(c){c.classList.remove('on');});
+        selStores.add('단지 상관없음'); b.classList.add('on');
+        return;
+      }
+      var anyBtn=body.children[0];
+      if(selStores.has('단지 상관없음')){selStores.delete('단지 상관없음');anyBtn.classList.remove('on');}
+      if(selStores.has(it.key)){selStores.delete(it.key);b.classList.remove('on');}
+      else{selStores.add(it.key);b.classList.add('on');}
+    };
+    body.appendChild(b);
+  });
+}
+function selStoreKind(k){ if(k!=='complex')return; G('stab-complex').className='stb on'; }
+
+/* ===== 거래 유형 ===== */
+function buildDeal(){
+  var items=(pType==='store')?DEAL_STORE:DEAL_RES;
+  var row=G('deal-row');
+  setGrid(row,items.length);
+  row.innerHTML='';
+  items.forEach(function(it){
+    var b=document.createElement('button');
+    b.type='button'; b.className='ib'; b.id='dl-'+it.id;
+    b.innerHTML='<span class="ico">'+it.ico+'</span>'+it.lbl;
+    b.onclick=function(){selDeal(it.id);};
+    row.appendChild(b);
+  });
+}
+function selDeal(t){
+  dType=t;
+  var items=(pType==='store')?DEAL_STORE:DEAL_RES;
+  items.forEach(function(it){
+    G('dl-'+it.id).className='ib'+(it.id===t?' '+it.c:'');
+  });
+  updatePr(t);
+  updLoan();
+  buildCond();
+  if(pType==='store'){      /* 상가는 매매/임대에 따라 내용이 달라짐 */
+    var sale=(t==='storesale');
+    G('movein-title').textContent = sale?'매수 희망 시점':'거래 희망 시점';
+    G('mvl-consult').textContent  = sale?'빠른진행 가능':'협의 가능';
+    G('mvl-immediate').textContent= sale?'일정협의 가능':'즉시 사용';
+    G('mvl-date').textContent     = sale?'날짜지정':'날짜 지정';
+    buildSelCard();
+    buildDirCard();
+    buildApplCard();
+  }
+}
+
+/* ===== 임대인 대출 (아파트/오피스텔 전·월세) ===== */
+function updLoan(){
+  var show=(pType==='apt'||pType==='opt')&&(dType==='rent'||dType==='monthly');
+  G('loan-card').className=show?'card':'card hide';
+  if(show){
+    if(!G('loan-row').hasChildNodes())buildLoan();
+  }else{
+    sLoan.clear();
+    var row=G('loan-row');
+    Array.from(row.children).forEach(function(c){c.className='dir-btn';});
+  }
+}
+function buildLoan(){
+  var row=G('loan-row');
+  setGrid(row,LOAN.length);
+  row.innerHTML='';
+  LOAN.forEach(function(it){
+    var b=document.createElement('button');
+    b.type='button'; b.className='dir-btn'; b.textContent=it.lbl;
+    b.onclick=function(){
+      if(sLoan.has(it.id)){sLoan.delete(it.id);b.className='dir-btn';}
+      else{sLoan.add(it.id);b.className='dir-btn on';}
+    };
+    row.appendChild(b);
+  });
+}
+
+/* ===== 금액 ===== */
+function updatePr(t){
+  var g=G('prg');
+  if(!t){g.innerHTML='<div class="olbl">거래 유형을 먼저 선택해주세요</div>';return;}
+  if(t==='sell')           g.innerHTML=mkPr('매매가','price1');
+  else if(t==='rent')      g.innerHTML=mkPr('전세가','price1');
+  else if(t==='storesale'){
+    g.innerHTML=
+      '<div class="g2">'+mkPr2('매수금','price1')+
+      '<div class="prr"><div class="prl2" style="min-width:auto;padding:12px 8px">수익률</div><input class="pri" id="want-yld" type="number" inputmode="numeric" placeholder="0" step="0.1" oninput="calcRent()"><div class="pru" style="padding:12px 8px 12px 2px">%</div></div>'+
+      '</div>'+
+      '<div class="depbox">'+
+        '<div class="depc">'+
+          '<span class="depl">보증금</span>'+
+          '<span class="depv" id="dep-val">3,000</span><span class="depu">만원</span>'+
+          '<div class="depspin">'+
+            '<button type="button" class="depb" onclick="adjDep(500)">▲</button>'+
+            '<button type="button" class="depb" onclick="adjDep(-500)">▼</button>'+
+          '</div>'+
+        '</div>'+
+        '<div class="yld" id="rent-box"><span id="rent-lbl">매수금·수익률을 입력하면 예상 월세가 표시됩니다</span><b id="rent-val">—</b></div>'+
+      '</div>';
+    STORE_DEPOSIT=3000;
+  }
+  else if(t==='storelease') g.innerHTML='<div class="g2">'+mkPr2('보증금','price1')+mkPr2('월세','price2')+'</div>';
+  else                      g.innerHTML='<div class="g2">'+mkPr2('보증금','price1')+mkPr2('월세','price2')+'</div>'; /* monthly */
+}
+function mkPr(l,id){
+  return '<div class="prr"><div class="prl2">'+l+'</div><input class="pri" id="'+id+'" type="number" inputmode="numeric" placeholder="0" oninput="if(typeof calcRent===\'function\')calcRent()"><div class="pru">만원</div></div>';
+}
+function mkPr2(l,id){
+  return '<div class="prr"><div class="prl2" style="min-width:auto;padding:12px 8px">'+l+'</div><input class="pri" id="'+id+'" type="number" inputmode="numeric" placeholder="0"><div class="pru" style="padding:12px 8px 12px 2px">만원</div></div>';
+}
+var STORE_DEPOSIT=3000; /* 보증금 기준(만원), 화살표로 조절 */
+function adjDep(d){
+  STORE_DEPOSIT=Math.max(0,STORE_DEPOSIT+d);
+  var dv=G('dep-val'); if(dv)dv.textContent=STORE_DEPOSIT.toLocaleString('en-US');
+  calcRent();
+}
+function calcRent(){
+  var box=G('rent-val'),lbl=G('rent-lbl'); if(!box)return;
+  var price=parseFloat(G('price1')?G('price1').value:'')||0;
+  var yld=parseFloat(G('want-yld')?G('want-yld').value:'')||0;
+  var dep=STORE_DEPOSIT;
+  var base=price-dep;
+  if(price>0&&yld>0&&base>0){
+    var rent=yld*base/12/100;
+    box.textContent='월 '+Math.round(rent).toLocaleString('en-US')+'만원';
+    lbl.textContent='보증금 '+dep.toLocaleString('en-US')+'만 기준';
+    box.parentElement.classList.add('on');
+  }else{
+    box.textContent='—';
+    lbl.textContent='매수금·수익률을 입력하면 예상 월세가 표시됩니다';
+    box.parentElement.classList.remove('on');
+  }
+}
+
+/* ===== 매물 선택 / 업종 / 운영방식 ===== */
+function buildSelCard(){
+  selApts.clear(); storeBiz=null; storeRun=null;
+  var title=G('sel-title'),note=G('sel-note'),body=G('sel-body'),detail=G('biz-detail');
+  body.innerHTML='';
+  if(detail){detail.style.display='none';detail.value='';}
+  if(pType==='store'){
+    if(!dType){
+      G('sel-card').className='card';
+      title.textContent='거래 유형을 먼저 선택해주세요';
+      note.textContent='';
+      setBlock(body);
+      return;
+    }
+    if(dType==='storesale'){
+      /* 상가매매: 운영방식 없음 → 매물선택 카드 숨김 (단지는 상가단지 드롭다운에서 선택) */
+      G('sel-card').className='card hide';
+      return;
+    }else{ /* storelease */
+      G('sel-card').className='card';
+      title.textContent='업종을 선택해주세요';
+      note.textContent='하나만 선택해주세요';
+      setGrid(body,BIZ.length);
+      BIZ.forEach(function(it){
+        var b=document.createElement('button');
+        b.type='button'; b.className='apt-btn';
+        b.innerHTML='<span class="ai">'+it.ico+'</span>'+it.lbl;
+        b.onclick=function(){
+          var was=(storeBiz===it.lbl);
+          Array.from(body.children).forEach(function(c){c.className='apt-btn';});
+          storeBiz=was?null:it.lbl;
+          if(!was)b.className='apt-btn on';
+        };
+        body.appendChild(b);
+      });
+      if(detail)detail.style.display='';
+    }
+  }else{
+    G('sel-card').className='card';
+    var list=(pType==='apt')?APT:OPT, ico=(pType==='apt')?'🏢':'🏨';
+    title.textContent=(pType==='apt')?'원하는 아파트를 선택해주세요':'원하는 오피스텔을 선택해주세요';
+    note.textContent='중복 선택 가능합니다';
+    setGrid(body,list.length);
+    list.forEach(function(item){
+      var b=document.createElement('button');
+      b.type='button'; b.className='apt-btn';
+      b.innerHTML='<span class="ai">'+ico+'</span>'+item.label.replace('\n','<br>');
+      b.onclick=function(){
+        if(selApts.has(item.key)){selApts.delete(item.key);b.classList.remove('on');}
+        else{selApts.add(item.key);b.classList.add('on');}
+      };
+      body.appendChild(b);
+    });
+  }
+}
+
+/* ===== 선호 방향 / 상세업종 ===== */
+function buildDirCard(){
+  selDirs.clear();
+  var card=G('dir-card'),title=G('dir-title'),note=G('dir-note'),body=G('dir-body');
+  /* 상가: 선호방향 불필요 + 상세업종은 업종 스텝으로 이동 → 카드 숨김 */
+  if(pType==='store'){ card.className='card hide'; return; }
+  card.className='card';
+  body.innerHTML='';
+  title.textContent='선호 방향을 선택해주세요';
+  note.textContent='중복 선택 가능합니다';
+  setGrid(body,DIRS.length);
+  DIRS.forEach(function(it){
+    var b=document.createElement('button');
+    b.type='button'; b.className='dir-btn'; b.textContent=it.lbl;
+    b.onclick=function(){
+      if(selDirs.has(it.id)){selDirs.delete(it.id);b.className='dir-btn';}
+      else{selDirs.add(it.id);b.className='dir-btn on';}
+    };
+    body.appendChild(b);
+  });
+}
+
+/* ===== 선호 층수 ===== */
+function buildFloorCard(){
+  selFloors.clear();
+  var body=G('floor-body'); body.innerHTML='';
+  if(pType==='store'){
+    setGrid(body,FLOOR_STORE.length);
+    FLOOR_STORE.forEach(function(it){addFloorBtn(body,it.lbl);});
+  }else{
+    setGrid(body,FLOOR_RES.length);
+    FLOOR_RES.forEach(function(it){
+      var lbl=it.lbl;
+      if(it.id==='f6'&&pType==='opt')lbl='비주거공간 위';
+      addFloorBtn(body,lbl);
+    });
+  }
+}
+function addFloorBtn(body,lbl){
+  var b=document.createElement('button');
+  b.type='button'; b.className='dir-btn'; b.textContent=lbl;
+  b.onclick=function(){
+    if(selFloors.has(lbl)){selFloors.delete(lbl);b.className='dir-btn';}
+    else{selFloors.add(lbl);b.className='dir-btn on';}
+  };
+  body.appendChild(b);
+}
+
+/* ===== 현재 의뢰인 상황 ===== */
+function buildCond(){
+  sCond.clear();
+  var row=G('cond-row');
+  var lbl=G('cond-lbl');
+  var ttl=G('cond-title');
+  if(ttl)ttl.textContent=(pType==='store')?((dType==='storesale')?'매수 목적 및 준비상황':'희망하는 임대 조건을 선택해주세요'):'현재 의뢰인 상황';
+  if(!dType){setBlock(row);row.innerHTML='';lbl.textContent='거래 유형을 먼저 선택해주세요';return;}
+  var items;
+  if(pType==='store')      items=(dType==='storesale')?COND_STORE_SALE:COND_STORE;
+  else if(dType==='sell')  items=COND_SELL;
+  else                     items=(pType==='opt')?COND_RENT_OPT:COND_RENT_APT;
+  lbl.textContent='중복 선택 가능합니다';
+  setGrid(row,items.length);
+  row.innerHTML='';
+  items.forEach(function(it){
+    var b=document.createElement('button');
+    b.type='button'; b.className='oib'; b.id='c-'+it.id;
+    b.style.whiteSpace='normal'; b.style.minWidth='0';
+    b.innerHTML='<span class="oi">'+it.ico+'</span>'+it.lbl.replace('\n','<br>');
+    b.onclick=function(){
+      var pair=condPairOf(it.id);
+      if(pair && !sCond.has(it.id) && sCond.has(pair)){
+        sCond.delete(pair);
+        var pb=G('c-'+pair); if(pb)pb.classList.remove('on');
+      }
+      tog(b,it.id,sCond);
+    };
+    row.appendChild(b);
+  });
+}
+/* 매수 목적 상호배타 쌍: 직접사용↔임대수익 */
+var COND_PAIRS=[['sm1','sm2']];
+function condPairOf(id){
+  for(var i=0;i<COND_PAIRS.length;i++){
+    if(COND_PAIRS[i][0]===id)return COND_PAIRS[i][1];
+    if(COND_PAIRS[i][1]===id)return COND_PAIRS[i][0];
+  }
+  return null;
+}
+
+/* ===== 생활·구조 / 가전 빌더 ===== */
+function buildGrid(gid,items,sel){
+  var g=G(gid); g.innerHTML='';
+  items.forEach(function(it){
+    var b=document.createElement('button');
+    b.type='button'; b.className='fb'; b.id=gid+it.id;
+    b.innerHTML='<span class="fi">'+it.ico+'</span>'+it.lbl.replace('\n','<br>');
+    b.onclick=function(){tog(b,it.id,sel);};
+    g.appendChild(b);
+  });
+}
+function buildStructCard(){
+  sStr.clear();
+  var st=(pType==='store');
+  var items=st?STRUCT_STORE:STRUCT_RES;
+  var t=G('struct-title'); if(t)t.textContent=st?'상가 특징 옵션':'생활 및 구조 옵션';
+  setGrid(G('sg'),items.length);
+  buildGrid('sg',items,sStr);
+}
+function buildApplCard(){
+  sApp.clear();
+  var sec=G('appl-section'),wrap=G('ag-wrap'),sub=G('ag-sub');
+  /* 상가매매: 가전 섹션 통째로 제거 */
+  if(pType==='store'&&dType==='storesale'){ sec.className='hide'; wrap.innerHTML=''; updBigo(); return; }
+  sec.className='';
+  if(pType==='store'){ /* 상가임대: 직접 입력 */
+    sub.textContent='필요한 가전·집기를 직접 적어주세요';
+    setBlock(wrap);
+    wrap.innerHTML='<input class="si" id="appl-free" type="text" placeholder="예: 냉난방기, 가스배관, 주방후드">';
+  }else{
+    sub.textContent='원하는 항목을 선택하세요';
+    var items=(pType==='apt')?APPL_APT:APPL_OPT;
+    setGrid(wrap,items.length);
+    wrap.innerHTML='';
+    items.forEach(function(it){
+      var b=document.createElement('button');
+      b.type='button'; b.className='fb'; b.id='ag'+it.id;
+      b.innerHTML='<span class="fi">'+it.ico+'</span>'+it.lbl.replace('\n','<br>');
+      b.onclick=function(){tog(b,it.id,sApp);};
+      wrap.appendChild(b);
+    });
+  }
+  updBigo();
+}
+
+function tog(btn,id,sel){
+  if(sel.has(id)){sel.delete(id);btn.classList.remove('on');}
+  else{sel.add(id);btn.classList.add('on');}
+  updBigo();
+}
+
+function updBigo(){
+  var hasAC=sApp.has('a1');
+  var ac=G('bigo-ac');
+  ac.className=hasAC?'':'hide';
+  if(!hasAC){
+    acSel=0;
+    for(var i=1;i<=6;i++){var b=G('ac-'+i);if(b)b.className='ac-cnt-btn';}
+    var bf=G('ac-full');if(bf)bf.className='ac-cnt-btn';
+  }
+}
+function selAC(n){
+  acSel=n;
+  for(var i=1;i<=6;i++){var b=G('ac-'+i);if(b)b.className='ac-cnt-btn'+(i===n?' on':'');}
+  var bf=G('ac-full');if(bf)bf.className='ac-cnt-btn'+(n==='full'?' on':'');
+}
+
+/* ===== 입주 희망일 ===== */
+function selMove(t){
+  mType=t;
+  ['consult','immediate','date'].forEach(function(x){G('mv-'+x).className='ib'+(x===t?' ab':'');});
+  G('mv-dw').className=(t==='date')?'':'hide';
+  if(t!=='date')G('dal').className='dal';
+}
+function onDate(){
+  var v=G('mv-di').value,l=G('dal');
+  if(v){
+    var p=v.split('-');
+    l.textContent=p[0]+'년 '+parseInt(p[1])+'월 '+parseInt(p[2])+'일 이후 가능';
+    l.className='dal vis';
+  }else l.className='dal';
+}
+
+function fmtPhone(el){
+  var v=el.value.replace(/[^0-9]/g,'');
+  if(v.length>11)v=v.slice(0,11);
+  if(v.length<=3)el.value=v;
+  else if(v.length<=7)el.value=v.slice(0,3)+'-'+v.slice(3);
+  else el.value=v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7);
+}
+
+function updCnt(){G('icnt').textContent=G('intro').value.length+'/100';}
+
+/* ===== 데이터 수집 ===== */
+function collectData(){
+  var moveIn='';
+  var isSale=(dType==='storesale'), isSt=(pType==='store');
+  if(mType==='consult')moveIn=isSale?'빠른진행 가능':(isSt?'협의 가능':'협의입주');
+  else if(mType==='immediate')moveIn=isSale?'일정협의 가능':(isSt?'즉시 사용':'빠른입주');
+  else moveIn=G('dal').textContent||'날짜 미선택';
+
+  var dirLabels={s:'남향',se:'남동향',sw:'남서향',e:'동향',w:'서향',n:'북향',ne:'북동향',nw:'북서향'};
+  var condLabels={};
+  [COND_SELL,COND_RENT_APT,COND_RENT_OPT,COND_STORE,COND_STORE_SALE].forEach(function(arr){
+    arr.forEach(function(it){condLabels[it.id]=it.lbl.replace('\n','');});
+  });
+  var loanLabels={}; LOAN.forEach(function(it){loanLabels[it.id]=it.lbl;});
+
+  var isStore=(pType==='store');
+  var isStoreSale=(dType==='storesale');
+  var structArr=isStore?STRUCT_STORE:STRUCT_RES;
+  var applArr=(isStore)?[]:((pType==='apt')?APPL_APT:APPL_OPT);
+  var structLabels={},applLabels={};
+  structArr.forEach(function(it){structLabels[it.id]=it.lbl;});
+  applArr.forEach(function(it){applLabels[it.id]=it.lbl;});
+
+  function toList(sel,labels){return Array.from(sel).map(function(k){return labels[k]||k;}).join(' | ');}
+
+  var acCountStr=acSel?(acSel==='full'?'풀에어컨':acSel+'대'):null;
+  var detailEl=G('biz-detail');
+  var applFreeEl=G('appl-free');
+
+  var applOut;
+  if(isStoreSale)      applOut=null;                                   /* 상가매매: 가전 없음 */
+  else if(isStore)     applOut=(applFreeEl&&applFreeEl.value.trim())||null; /* 상가임대: 직접입력 */
+  else                 applOut=toList(sApp,applLabels)||null;          /* 아파트/오피스텔 */
+
+  return {
+    formType:'search',
+    propType:pType,
+    dealType:dType,
+    price1:G('price1')?G('price1').value:null,
+    price2:G('price2')?G('price2').value:null,
+    aptList:isStore?null:(Array.from(selApts).join(' | ')||null),
+    storeBiz:(isStore&&!isStoreSale)?(storeBiz||null):null,
+    storeComplex:isStore?(Array.from(selStores).join(' | ')||null):null,
+    storeKind:isStore?'단지상가':null,
+    storeSalePrice:isStoreSale?(G('price1')?G('price1').value||null:null):null,
+    storeWantYield:isStoreSale?(G('want-yld')?G('want-yld').value||null:null):null,
+    storeExpectedRent:(isStoreSale&&G('rent-val'))?(G('rent-val').textContent!=='—'?G('rent-val').textContent:null):null,
+    storeBaseDeposit:isStoreSale?String(STORE_DEPOSIT):null,
+    storeDetail:(isStore&&!isStoreSale)?((detailEl&&detailEl.value.trim())||null):null,
+    dirList:isStore?null:(toList(selDirs,dirLabels)||null),
+    floorList:Array.from(selFloors).join(' | ')||null,
+    loanList:toList(sLoan,loanLabels)||null,
+    clientName:G('cl-name').value.trim(),
+    clientPhone:G('cl-phone').value.trim(),
+    moveIn:moveIn,
+    condList:toList(sCond,condLabels)||null,
+    structList:toList(sStr,structLabels)||null,
+    applList:applOut,
+    acCount:(isStore)?null:acCountStr,
+    intro:G('intro').value.trim()||null,
+  };
+}
+
+async function doSubmit(){
+  if(!dType){alert('거래 유형을 선택해주세요');return;}
+  if(pType==='store'){
+    if(dType==='storelease'){
+      if(!storeBiz){alert('업종을 선택해주세요');return;}
+    }
+  }else{
+    if(selApts.size===0){alert((pType==='apt'?'아파트':'오피스텔')+'를 하나 이상 선택해주세요');return;}
+  }
+  if(!G('cl-name').value.trim()||!G('cl-phone').value.trim()){alert('의뢰인 정보를 입력해주세요');return;}
+  if(!mType){alert('입주 희망일을 선택해주세요');return;}
+
+  var btn=G('submit-btn');
+  if(btn){btn.disabled=true;btn.textContent='전송 중...';}
+
+  try{
+    var res=await fetch('/api/submit',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(collectData())
+    });
+    if(!res.ok) throw new Error('서버 오류');
+    G('mf').style.display='none';
+    G('done').style.display='flex';
+  }catch(e){
+    alert('전송 중 오류가 발생했습니다. 다시 시도해주세요.');
+    if(btn){btn.disabled=false;btn.textContent='중개 의뢰 보내기';}
+  }
+}
+
+init();
+
+</script>
+</body>
+</html>
